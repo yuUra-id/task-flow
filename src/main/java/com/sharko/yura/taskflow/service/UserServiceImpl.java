@@ -1,10 +1,17 @@
 package com.sharko.yura.taskflow.service;
 
+import com.sharko.yura.taskflow.dto.UserCreateDTO;
+import com.sharko.yura.taskflow.dto.UserResponseDTO;
 import com.sharko.yura.taskflow.entity.User;
+import com.sharko.yura.taskflow.exception.PasswordMismatchException;
+import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
 import com.sharko.yura.taskflow.exception.UserNotFoundException;
+import com.sharko.yura.taskflow.exception.UserWithEmailAlreadyExistsException;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,10 +19,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository,  PasswordEncoder passwordEncoder) {
+
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
     @Override
@@ -34,17 +45,50 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
-
-
-
-
-
-
     @Override
-    public User save(User user) {
-        return null;
+    @Transactional
+    public UserResponseDTO create(UserCreateDTO userCreateDTO) {
+
+        if(!userCreateDTO.isPasswordConfirmed()){
+            throw new PasswordMismatchException("Mismatch password");
+        }
+
+        if(userRepository.findByUsername(userCreateDTO.getUsername()) != null){
+            throw new UserAlreadyExistsException("User with name " + userCreateDTO.getUsername() + " already exists");
+        }
+
+        if(userRepository.findByEmail(userCreateDTO.getEmail()) != null){
+            throw new UserWithEmailAlreadyExistsException("User with email " + userCreateDTO.getEmail() + " already exists");
+        }
+
+        String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+
+        User user = new User();
+        user.setUsername(userCreateDTO.getUsername());
+        user.setEmail(userCreateDTO.getEmail());
+        user.setPassword(encodedPassword);
+        user.setRole(userCreateDTO.getRole());
+
+        User saveUser = userRepository.save(user);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(saveUser.getUsername());
+        userResponseDTO.setEmail(saveUser.getEmail());
+        userResponseDTO.setRole(saveUser.getRole());
+        userResponseDTO.setCreatedAt(saveUser.getCreatedAt());
+
+        return userResponseDTO;
     }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public User update(User user) {
@@ -65,5 +109,5 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return null;
     }
-    
+
 }

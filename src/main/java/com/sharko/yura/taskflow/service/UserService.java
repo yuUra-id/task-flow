@@ -1,5 +1,7 @@
 package com.sharko.yura.taskflow.service;
 
+import com.sharko.yura.taskflow.dto.UserCreateDTO;
+import com.sharko.yura.taskflow.dto.UserResponseDTO;
 import com.sharko.yura.taskflow.entity.User;
 
 import java.util.List;
@@ -10,7 +12,9 @@ public interface UserService {
 
     User findById(Long id);
 
-    User save(User user);
+    UserResponseDTO create(UserCreateDTO userCreateDTO);
+
+//    User save(UserCreateDTO userCreateDTO);
 
     User update(User user);
 
