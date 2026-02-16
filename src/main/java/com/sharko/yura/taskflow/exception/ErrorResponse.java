@@ -1,6 +1,7 @@
 package com.sharko.yura.taskflow.exception;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ErrorResponse {
 
@@ -8,6 +9,7 @@ public class ErrorResponse {
     private String message;
     private LocalDateTime timestamp;
     private String path;
+    private List<String> errors;
 
     public ErrorResponse() {}
 
@@ -50,4 +52,11 @@ public class ErrorResponse {
         this.path = path;
     }
 
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors;
+    }
 }

@@ -53,11 +53,11 @@ public class UserServiceImpl implements UserService {
             throw new PasswordMismatchException("Mismatch password");
         }
 
-        if(userRepository.findByUsername(userCreateDTO.getUsername()) != null){
+        if(userRepository.existsByUsername(userCreateDTO.getUsername())){
             throw new UserAlreadyExistsException("User with name " + userCreateDTO.getUsername() + " already exists");
         }
 
-        if(userRepository.findByEmail(userCreateDTO.getEmail()) != null){
+        if(userRepository.existsByEmail(userCreateDTO.getEmail())){
             throw new UserWithEmailAlreadyExistsException("User with email " + userCreateDTO.getEmail() + " already exists");
         }
 
