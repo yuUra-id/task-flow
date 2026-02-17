@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,9 +31,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<UserResponseDTO> findAll() {
 
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        List<UserResponseDTO> userResponseDTOS = new ArrayList<>();
+        for (User user : users) {
+            UserResponseDTO userResponseDTO = new UserResponseDTO();
+            userResponseDTO.setUsername(user.getUsername());
+            userResponseDTO.setEmail(user.getEmail());
+            userResponseDTO.setRole(user.getRole());
+            userResponseDTO.setCreatedAt(user.getCreatedAt());
+            userResponseDTOS.add(userResponseDTO);
+        }
+
+        return userResponseDTOS;
 
     }
 
