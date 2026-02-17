@@ -80,20 +80,19 @@ public class UserServiceImpl implements UserService {
         return userResponseDTO;
     }
 
-
-
-
-
-
-
-
-
-
-
     @Override
+    @Transactional
     public User update(User user) {
         return null;
     }
+
+
+
+
+
+
+
+
 
     @Override
     public void delete(Long id) {
