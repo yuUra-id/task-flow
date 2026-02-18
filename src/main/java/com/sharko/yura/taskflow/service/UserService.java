@@ -10,13 +10,13 @@ public interface UserService {
 
     List<UserResponseDTO> findAll();
 
-    User findById(Long id);
+    UserResponseDTO findById(Long id);
 
     UserResponseDTO create(UserCreateDTO userCreateDTO);
 
 //    User save(UserCreateDTO userCreateDTO);
 
-    User update(User user);
+    UserResponseDTO update(User user);
 
     void delete(Long id);
 

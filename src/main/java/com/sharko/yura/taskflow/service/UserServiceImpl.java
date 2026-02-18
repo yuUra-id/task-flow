@@ -49,11 +49,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
+    public UserResponseDTO findById(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
-        return user;
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(user.getUsername());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setRole(user.getRole());
+        userResponseDTO.setCreatedAt(user.getCreatedAt());
+
+        return userResponseDTO;
 
     }
 
@@ -94,7 +101,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User update(User user) {
+    public UserResponseDTO update(User user) {
         return null;
     }
 
