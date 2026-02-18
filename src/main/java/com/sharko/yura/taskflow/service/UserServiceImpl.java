@@ -2,6 +2,7 @@ package com.sharko.yura.taskflow.service;
 
 import com.sharko.yura.taskflow.dto.UserCreateDTO;
 import com.sharko.yura.taskflow.dto.UserResponseDTO;
+import com.sharko.yura.taskflow.dto.UserUpdateDTO;
 import com.sharko.yura.taskflow.entity.User;
 import com.sharko.yura.taskflow.exception.PasswordMismatchException;
 import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
@@ -101,11 +102,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponseDTO update(User user) {
-        return null;
+    public UserResponseDTO update(Long id, UserUpdateDTO dto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+
+        if(userRepository.findByUsername(dto.getUsername())!=null){
+
+            throw new UserAlreadyExistsException("User with name " + dto.getUsername() + " already exists");
+
+        }
+
+        if(userRepository.findByEmail(dto.getEmail())!=null){
+
+            throw new UserWithEmailAlreadyExistsException("User with email " + dto.getEmail() + " already exists");
+
+        }
+
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        userRepository.save(user);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(user.getUsername());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setRole(user.getRole());
+        userResponseDTO.setCreatedAt(user.getCreatedAt());
+
+        return userResponseDTO;
+
     }
-
-
 
 
 

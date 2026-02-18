@@ -2,6 +2,7 @@ package com.sharko.yura.taskflow.controller;
 
 import com.sharko.yura.taskflow.dto.UserCreateDTO;
 import com.sharko.yura.taskflow.dto.UserResponseDTO;
+import com.sharko.yura.taskflow.dto.UserUpdateDTO;
 import com.sharko.yura.taskflow.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,15 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
 
         UserResponseDTO userResponseDTO = userService.findById(id);
+
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO  userUpdateDTO) {
+
+        UserResponseDTO userResponseDTO = userService.update(id, userUpdateDTO);
 
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
 
