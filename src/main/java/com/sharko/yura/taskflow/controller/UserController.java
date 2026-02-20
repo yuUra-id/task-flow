@@ -70,4 +70,22 @@ public class UserController {
 
     }
 
+    @GetMapping("/username")
+    public ResponseEntity<UserResponseDTO>  getByUsername(@RequestParam String username) {
+
+        UserResponseDTO userResponseDTO = userService.findByUsername(username);
+
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<UserResponseDTO> getByEmail(@RequestParam String email) {
+
+        UserResponseDTO userResponseDTO = userService.findByEmail(email);
+
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
+
+    }
+
 }
