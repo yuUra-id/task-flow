@@ -13,4 +13,5 @@ public class UserWithEmailAlreadyExistsException extends RuntimeException{
     public UserWithEmailAlreadyExistsException(Throwable cause) {
         super(cause);
     }
+
 }

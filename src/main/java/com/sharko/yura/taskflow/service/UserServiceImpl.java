@@ -144,20 +144,38 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
-
-
-
-
-
     @Override
-    public User findByUsername(String username) {
-        return null;
+    public UserResponseDTO findByUsername(String username) {
+
+        User user = userRepository.findByUsername(username);
+        if(user==null){
+            throw new UserNotFoundException("User with name " + username + " not found");
+        }
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(user.getUsername());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setRole(user.getRole());
+        userResponseDTO.setCreatedAt(user.getCreatedAt());
+
+        return userResponseDTO;
+
     }
 
     @Override
-    public User findByEmail(String email) {
-        return null;
+    public UserResponseDTO findByEmail(String email) {
+
+        User user = userRepository.findByEmail(email);
+        if(user==null){
+            throw new UserNotFoundException("User with email " + email + " not found");
+        }
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(user.getUsername());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setRole(user.getRole());
+        userResponseDTO.setCreatedAt(user.getCreatedAt());
+
+        return userResponseDTO;
+
     }
 
 }

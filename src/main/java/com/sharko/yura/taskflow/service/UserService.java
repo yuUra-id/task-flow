@@ -21,8 +21,8 @@ public interface UserService {
 
     void delete(Long id);
 
-    User findByUsername(String username);
+    UserResponseDTO findByUsername(String username);
 
-    User findByEmail(String email);
+    UserResponseDTO findByEmail(String email);
 
 }
