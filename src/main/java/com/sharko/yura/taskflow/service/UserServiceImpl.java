@@ -37,11 +37,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDTO> userResponseDTOS = new ArrayList<>();
         for (User user : users) {
-            UserResponseDTO userResponseDTO = new UserResponseDTO();
-            userResponseDTO.setUsername(user.getUsername());
-            userResponseDTO.setEmail(user.getEmail());
-            userResponseDTO.setRole(user.getRole());
-            userResponseDTO.setCreatedAt(user.getCreatedAt());
+            UserResponseDTO userResponseDTO = mapToDTO(user);
             userResponseDTOS.add(userResponseDTO);
         }
 
@@ -55,13 +51,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(user.getUsername());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setRole(user.getRole());
-        userResponseDTO.setCreatedAt(user.getCreatedAt());
-
-        return userResponseDTO;
+        return mapToDTO(user);
 
     }
 
@@ -91,13 +81,7 @@ public class UserServiceImpl implements UserService {
 
         User saveUser = userRepository.save(user);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(saveUser.getUsername());
-        userResponseDTO.setEmail(saveUser.getEmail());
-        userResponseDTO.setRole(saveUser.getRole());
-        userResponseDTO.setCreatedAt(saveUser.getCreatedAt());
-
-        return userResponseDTO;
+        return mapToDTO(saveUser);
     }
 
     @Override
@@ -107,13 +91,15 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 
-        if(userRepository.findByUsername(dto.getUsername())!=null){
+        User userByUsername = userRepository.findByUsername(dto.getUsername());
+        if(userByUsername!=null && !userByUsername.getId().equals(id)){
 
             throw new UserAlreadyExistsException("User with name " + dto.getUsername() + " already exists");
 
         }
 
-        if(userRepository.findByEmail(dto.getEmail())!=null){
+        User userByEmail = userRepository.findByEmail(dto.getEmail());
+        if(userByEmail!=null && !userByEmail.getId().equals(id)){
 
             throw new UserWithEmailAlreadyExistsException("User with email " + dto.getEmail() + " already exists");
 
@@ -123,13 +109,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.getEmail());
         userRepository.save(user);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(user.getUsername());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setRole(user.getRole());
-        userResponseDTO.setCreatedAt(user.getCreatedAt());
-
-        return userResponseDTO;
+        return mapToDTO(user);
 
     }
 
@@ -151,13 +131,8 @@ public class UserServiceImpl implements UserService {
         if(user==null){
             throw new UserNotFoundException("User with name " + username + " not found");
         }
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(user.getUsername());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setRole(user.getRole());
-        userResponseDTO.setCreatedAt(user.getCreatedAt());
 
-        return userResponseDTO;
+        return mapToDTO(user);
 
     }
 
@@ -168,6 +143,13 @@ public class UserServiceImpl implements UserService {
         if(user==null){
             throw new UserNotFoundException("User with email " + email + " not found");
         }
+
+        return mapToDTO(user);
+
+    }
+
+    private UserResponseDTO mapToDTO(User user){
+
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setUsername(user.getUsername());
         userResponseDTO.setEmail(user.getEmail());
