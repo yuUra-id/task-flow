@@ -5,6 +5,6 @@ import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 
 public interface TaskService {
 
-    TaskResponseDTO createTask(TaskCreateDTO taskCreateDTO, Long creatorId);
+    TaskResponseDTO create(TaskCreateDTO taskCreateDTO, Long creatorId);
 
 }

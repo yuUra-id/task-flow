@@ -21,7 +21,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponseDTO createTask(TaskCreateDTO taskCreateDTO, Long creatorId) {
+    public TaskResponseDTO create(TaskCreateDTO taskCreateDTO, Long creatorId) {
 
         Task task = new Task();
 
