@@ -7,6 +7,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Конфигурация безопасности приложения TaskFlow.
+ * Настройка HTTP-безопасности
+ * Отключение CSRF (для REST API)
+ * Определение правил авторизации запросов
+ * Создание бина для хеширования паролей
+ * На текущем этапе разработки все HTTP-запросы разрешены (permitAll),
+ * так как проект находится в стадии разработки и тестирования.
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -16,7 +25,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // отключаем csrf для REST
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // 🔥 РАЗРЕШАЕМ ВСЕ ЗАПРОСЫ
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

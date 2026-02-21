@@ -12,6 +12,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST-контроллер для управления пользователями.
+ * Обрабатывает HTTP-запросы, связанные с сущностью User.
+ * Реализует стандартные CRUD-операции:
+ * Создание пользователя
+ * Получение списка пользователей
+ * Получение пользователя по ID
+ * Обновление данных пользователя
+ * Удаление пользователя
+ * Поиск по username и email
+ * Все ответы возвращаются в виде DTO-объектов, что исключает утечку чувствительных данных (например, пароля).
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -24,7 +36,7 @@ public class UserController {
         this.userService = userService;
 
     }
-
+    //Создание пользователя
     @PostMapping
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
 
@@ -33,7 +45,7 @@ public class UserController {
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
 
     }
-
+    //Получение списка пользователей
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAll() {
 
@@ -42,7 +54,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
 
     }
-
+    //Получение пользователя по ID
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
 
@@ -51,7 +63,7 @@ public class UserController {
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
 
     }
-
+    //Обновление данных пользователя
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO  userUpdateDTO) {
 
@@ -60,7 +72,7 @@ public class UserController {
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
 
     }
-
+    //Удаление пользователя
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
@@ -69,7 +81,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
 
     }
-
+    //Поиск по username
     @GetMapping("/username")
     public ResponseEntity<UserResponseDTO>  getByUsername(@RequestParam String username) {
 
@@ -78,7 +90,7 @@ public class UserController {
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
 
     }
-
+    //Поиск по email
     @GetMapping("/email")
     public ResponseEntity<UserResponseDTO> getByEmail(@RequestParam String email) {
 

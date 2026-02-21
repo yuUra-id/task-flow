@@ -4,6 +4,15 @@ import com.sharko.yura.taskflow.entity.Role;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO для передачи данных пользователя клиенту.
+ * Используется в ответах REST API вместо сущности User,
+ * чтобы исключить передачу чувствительной информации (например, пароля).
+ * Содержит только безопасные и необходимые клиенту данные:
+ * username, email, role, createdAt
+ * Применяется в методах контроллера при получении,
+ * создании и обновлении пользователей.
+ */
 public class UserResponseDTO {
 
     private String username;

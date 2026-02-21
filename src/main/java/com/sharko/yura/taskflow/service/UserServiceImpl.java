@@ -17,6 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Реализация сервиса UserService для управления пользователями.
+ * Обеспечивает полный набор CRUD-операций:
+ * Создание пользователя с хешированием пароля
+ * Получение пользователя по id, username, email
+ * Обновление данных пользователя с проверкой уникальности
+ * Удаление пользователя
+ * Все операции возвращают DTO для безопасного обмена данными с контроллером.
+ * Также реализована валидация и обработка ошибок:
+ * Проверка уникальности username и email
+ * Проверка подтверждения пароля при создании пользователя
+ * Генерация исключений UserNotFoundException, UserAlreadyExistsException,
+ * UserWithEmailAlreadyExistsException, PasswordMismatchException
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -31,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Получение списка всех пользователей
     @Override
     public List<UserResponseDTO> findAll() {
 
@@ -45,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Получение пользователя по id
     @Override
     public UserResponseDTO findById(Long id) {
 
@@ -55,6 +71,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Создание пользователя с хешированием пароля
     @Override
     @Transactional
     public UserResponseDTO create(UserCreateDTO userCreateDTO) {
@@ -84,6 +101,7 @@ public class UserServiceImpl implements UserService {
         return mapToDTO(saveUser);
     }
 
+    //Обновление данных пользователя с проверкой уникальности
     @Override
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO dto) {
@@ -113,6 +131,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Удаление пользователя
     @Override
     @Transactional
     public void delete(Long id) {
@@ -124,6 +143,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Получение пользователя по username
     @Override
     public UserResponseDTO findByUsername(String username) {
 
@@ -136,6 +156,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Получение пользователя по email
     @Override
     public UserResponseDTO findByEmail(String email) {
 
@@ -148,6 +169,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    //Маппинг User in DTO
     private UserResponseDTO mapToDTO(User user){
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();

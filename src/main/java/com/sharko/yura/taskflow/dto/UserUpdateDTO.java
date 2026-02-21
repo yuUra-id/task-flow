@@ -5,6 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+
+/**
+ * DTO для обновления данных пользователя.
+ * Используется в PUT-запросах при обновлении информации о пользователе.
+ * Содержит только изменяемые поля (username и email).
+ * Пароль не обновляется через данный DTO.
+ * Валидация выполняется с помощью Jakarta Validation
+ * перед передачей данных в сервисный слой.
+ */
 public class UserUpdateDTO {
 
     /**

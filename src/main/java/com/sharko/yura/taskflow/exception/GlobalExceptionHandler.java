@@ -10,9 +10,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Глобальный обработчик исключений приложения.
+ * Перехватывает все пользовательские и системные исключения,
+ * возникающие в контроллерах, и преобразует их в единый
+ * структурированный JSON-ответ.
+ * Позволяет:
+ * Возвращать корректные HTTP-статусы.
+ * Формировать единый формат ошибки.
+ * Обрабатывать ошибки валидации DTO
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    //Если пользователь не найден
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(
             UserNotFoundException exception, HttpServletRequest request) {
@@ -20,7 +31,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, request, HttpStatus.NOT_FOUND);
 
     }
-
+    //Несоответствия паролей
     @ExceptionHandler(PasswordMismatchException.class)
     public ResponseEntity<ErrorResponse> handleException(
             PasswordMismatchException exception, HttpServletRequest request) {
@@ -28,7 +39,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, request, HttpStatus.BAD_REQUEST);
 
     }
-
+    //Обработка, если пользователь с username уже существует
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleException(
             UserAlreadyExistsException exception, HttpServletRequest request) {
@@ -36,7 +47,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, request, HttpStatus.CONFLICT);
 
     }
-
+    //Обработка, если пользователь с email уже существует
     @ExceptionHandler(UserWithEmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleException(
             UserWithEmailAlreadyExistsException exception, HttpServletRequest request) {
@@ -44,7 +55,7 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, request, HttpStatus.CONFLICT);
 
     }
-
+    //Обработка ошибок валидации DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(
             MethodArgumentNotValidException exception, HttpServletRequest request) {
@@ -64,7 +75,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 
     }
-
+    //Формирует стандартный ответ об ошибке
     private ResponseEntity<ErrorResponse> buildErrorResponse(
             RuntimeException exception, HttpServletRequest request, HttpStatus status) {
 

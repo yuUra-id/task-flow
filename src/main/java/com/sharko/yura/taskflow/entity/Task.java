@@ -33,15 +33,15 @@ public class Task {
     private String description;
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.NEW;
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private TaskPriority priority;
+    private TaskPriority priority = TaskPriority.LOW;
     @ManyToOne()
     @JoinColumn(name = "id_creator")
     private User creator;
     @ManyToOne()
-    @JoinColumn(name = "id_executor")
+    @JoinColumn(name = "id_executor", nullable = true)
     private User executor;
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
