@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-import static com.sharko.yura.taskflow.entity.TaskPriority.LOW;
 
 public class TaskCreateDTO {
 
