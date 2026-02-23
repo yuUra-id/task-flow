@@ -2,10 +2,7 @@ package com.sharko.yura.taskflow.service;
 
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
-import com.sharko.yura.taskflow.entity.Task;
-import com.sharko.yura.taskflow.entity.TaskPriority;
-import com.sharko.yura.taskflow.entity.TaskStatus;
-import com.sharko.yura.taskflow.entity.User;
+import com.sharko.yura.taskflow.entity.*;
 import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
 import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.repository.TaskRepository;
@@ -73,14 +70,13 @@ public class TaskServiceImpl implements TaskService {
             throw new UserNotFoundException("User not found");
         }
         List<Task> tasks;
-        if(user.getRole().name().equals("ADMIN")) {
+        if(user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER) {
 
             tasks = taskRepository.findAll();
 
         }else{
 
             tasks = new ArrayList<>();
-            tasks.addAll(taskRepository.findByCreatorId(user.getId()));
             tasks.addAll(taskRepository.findByExecutorId(user.getId()));
 
         }

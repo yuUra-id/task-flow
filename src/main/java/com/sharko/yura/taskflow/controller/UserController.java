@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class UserController {
     }
     //Создание пользователя
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
 
         UserResponseDTO userResponseDTO = userService.create(userCreateDTO);
@@ -47,6 +49,7 @@ public class UserController {
     }
     //Получение списка пользователей
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UserResponseDTO>> getAll() {
 
         List<UserResponseDTO> users = userService.findAll();
@@ -56,6 +59,7 @@ public class UserController {
     }
     //Получение пользователя по ID
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
 
         UserResponseDTO userResponseDTO = userService.findById(id);
@@ -65,6 +69,7 @@ public class UserController {
     }
     //Обновление данных пользователя
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO  userUpdateDTO) {
 
         UserResponseDTO userResponseDTO = userService.update(id, userUpdateDTO);
@@ -74,6 +79,7 @@ public class UserController {
     }
     //Удаление пользователя
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
         userService.delete(id);
@@ -83,6 +89,7 @@ public class UserController {
     }
     //Поиск по username
     @GetMapping("/username")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO>  getByUsername(@RequestParam String username) {
 
         UserResponseDTO userResponseDTO = userService.findByUsername(username);
@@ -92,6 +99,7 @@ public class UserController {
     }
     //Поиск по email
     @GetMapping("/email")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO> getByEmail(@RequestParam String email) {
 
         UserResponseDTO userResponseDTO = userService.findByEmail(email);
