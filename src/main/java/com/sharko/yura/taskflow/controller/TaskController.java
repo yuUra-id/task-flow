@@ -2,14 +2,20 @@ package com.sharko.yura.taskflow.controller;
 
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
+import com.sharko.yura.taskflow.entity.Task;
+import com.sharko.yura.taskflow.entity.User;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import com.sharko.yura.taskflow.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -28,10 +34,9 @@ public class TaskController {
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskCreateDTO taskCreateDTO,
                                                       @AuthenticationPrincipal UserDetails userDetails) {
 
-        Long creatorId = userRepository.findByUsername(userDetails.getUsername()).getId();
-        TaskResponseDTO taskResponseDTO = taskService.create(taskCreateDTO, creatorId);
+        TaskResponseDTO taskResponseDTO = taskService.create(taskCreateDTO, userDetails.getUsername());
 
-        return ResponseEntity.ok(taskResponseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskResponseDTO);
 
     }
 

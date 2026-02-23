@@ -2,7 +2,6 @@ package com.sharko.yura.taskflow.config;
 
 import com.sharko.yura.taskflow.entity.User;
 import com.sharko.yura.taskflow.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

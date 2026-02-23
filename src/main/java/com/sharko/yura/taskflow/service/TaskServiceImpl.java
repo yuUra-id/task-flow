@@ -5,6 +5,9 @@ import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 import com.sharko.yura.taskflow.entity.Task;
 import com.sharko.yura.taskflow.entity.TaskPriority;
 import com.sharko.yura.taskflow.entity.TaskStatus;
+import com.sharko.yura.taskflow.entity.User;
+import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
+import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.repository.TaskRepository;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +28,32 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
-    public TaskResponseDTO create(TaskCreateDTO taskCreateDTO, Long creatorId) {
+    public TaskResponseDTO create(TaskCreateDTO taskCreateDTO, String usernameCreator) {
 
         Task task = new Task();
 
+        User creator = userRepository.findByUsername(usernameCreator);
+        if(creator == null) {
+
+            throw new UserNotFoundException("Creator not found");
+
+        }
+
         task.setTitle(taskCreateDTO.getTitle());
         task.setDescription(taskCreateDTO.getDescription());
-        task.setPriority(taskCreateDTO.getPriority());
         task.setDeadline(taskCreateDTO.getDeadline());
         TaskPriority taskPriority = taskCreateDTO.getPriority() != null
                 ? taskCreateDTO.getPriority(): TaskPriority.LOW;
         task.setPriority(taskPriority);
         task.setStatus(TaskStatus.NEW);
 
-        task.setCreator(userRepository.findById(creatorId)
-                .orElseThrow(() -> new RuntimeException("Creator user not found!")));
+        creator.addCreatedTask(task);
 
-        Long ExecutorId = taskCreateDTO.getExecutorId();
-        if(ExecutorId != null){
-            task.setExecutor(userRepository.findById(ExecutorId)
-                .orElseThrow(() -> new RuntimeException("Executor user not found!")));
+        if(taskCreateDTO.getExecutorId() != null) {
+
+            User executor = userRepository.findById(taskCreateDTO.getExecutorId())
+                    .orElseThrow(()-> new UserNotFoundException("Executor not found"));
+            executor.addExecutorTask(task);
         }
 
         Task savedTask = taskRepository.save(task);
