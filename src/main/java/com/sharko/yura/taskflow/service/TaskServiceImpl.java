@@ -2,12 +2,14 @@ package com.sharko.yura.taskflow.service;
 
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
+import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
 import com.sharko.yura.taskflow.entity.*;
-import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
+import com.sharko.yura.taskflow.exception.TaskNotFoundException;
 import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.repository.TaskRepository;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +88,74 @@ public class TaskServiceImpl implements TaskService {
 
         return taskResponseDTOList;
 
+    }
+
+    @Override
+    @Transactional
+    public TaskResponseDTO update(Long taskId, TaskUpdateDTO taskUpdateDTO, String username) {
+
+        //Получаем пользователя и проверяем есть или нет
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        //Находим задачу которую нужно обновить
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+        //Проверяем роли, если админ или менеджер то можно все менять и всех задач
+        if (user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER){
+
+            task = taskUpdateDTOMapTask(taskUpdateDTO, task);
+
+        } else if (user.getRole() == Role.USER){//Если изменения пытается внести обычный пользователь
+            //разрешаем менять толь статус и только у своей задачи
+            //вот тут проверяем его это задача или нет
+            if(task.getExecutor() != null && user.getId().equals(task.getExecutor().getId())) {
+
+                if (taskUpdateDTO.getStatus() != null) task.setStatus(taskUpdateDTO.getStatus());
+
+            }else {
+
+                throw new AccessDeniedException("Access denied");
+
+            }
+
+        }else {
+
+            throw new AccessDeniedException("Access denied");
+
+        }
+
+        return mapToTaskResponseDTO(task);
+
+    }
+
+    private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){
+
+        if (taskUpdateDTO.getTitle() != null) task.setTitle(taskUpdateDTO.getTitle());
+        if (taskUpdateDTO.getDescription() != null) task.setDescription(taskUpdateDTO.getDescription());
+        if (taskUpdateDTO.getDeadline() != null) task.setDeadline(taskUpdateDTO.getDeadline());
+        if (taskUpdateDTO.getPriority() != null) task.setPriority(taskUpdateDTO.getPriority());
+        if (taskUpdateDTO.getStatus() != null) task.setStatus(taskUpdateDTO.getStatus());
+
+        if (taskUpdateDTO.getExecutorID() != null) {
+
+            User executor = userRepository.findById(taskUpdateDTO.getExecutorID())
+                    .orElseThrow(() -> new UserNotFoundException("Executor not found"));
+
+            User oldExecutor = task.getExecutor();
+
+            if (oldExecutor != null) {
+                oldExecutor.removeExecutorTask(task);
+            }
+
+            executor.addExecutorTask(task);
+
+
+        }
+
+        return task;
     }
 
     private TaskResponseDTO mapToTaskResponseDTO(Task task){

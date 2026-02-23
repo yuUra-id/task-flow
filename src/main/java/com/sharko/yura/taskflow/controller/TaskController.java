@@ -2,6 +2,7 @@ package com.sharko.yura.taskflow.controller;
 
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
+import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import com.sharko.yura.taskflow.service.TaskService;
 import jakarta.validation.Valid;
@@ -43,6 +44,17 @@ public class TaskController {
 
         List<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername());
         return ResponseEntity.ok(taskResponseDTOList);
+
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<TaskResponseDTO> updateTask(@AuthenticationPrincipal UserDetails userDetails,
+                                                      @Valid @RequestBody TaskUpdateDTO taskUpdateDTO,
+                                                      @PathVariable("id") Long taskID) {
+
+        TaskResponseDTO taskResponseDTO = taskService.update(taskID, taskUpdateDTO, userDetails.getUsername());
+        return ResponseEntity.ok().body(taskResponseDTO);
 
     }
 

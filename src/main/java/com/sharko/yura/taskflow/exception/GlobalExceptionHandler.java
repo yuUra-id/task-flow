@@ -55,6 +55,13 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, request, HttpStatus.CONFLICT);
 
     }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleException(
+            TaskNotFoundException exception, HttpServletRequest request
+    ){
+        return buildErrorResponse(exception, request, HttpStatus.NOT_FOUND);
+    }
     //Обработка ошибок валидации DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleException(

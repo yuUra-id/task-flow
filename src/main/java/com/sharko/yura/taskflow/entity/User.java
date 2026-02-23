@@ -113,6 +113,15 @@ public class User {
 
     }
 
+    public void removeCreatedTask(Task task) {
+        createdTasks.remove(task);
+    }
+
+    public void removeExecutorTask(Task task) {
+        executorTasks.remove(task);
+        task.setExecutor(null);
+    }
+
     public List<Task> getExecutorTasks() {
         return executorTasks;
     }
