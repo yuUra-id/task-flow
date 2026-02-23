@@ -99,4 +99,12 @@ TASK API
     "title": "test6",  
     "description": "text6",  
     "deadline": "2026-03-27T23:59:00"  
-}  
+}
+Запрос на обновление данных задачи:
+{
+        "title": "test2000",
+        "description": "text2000",
+        "priority": "LOW",
+        "status": "IN_PROGRESS",
+        "executorID": 2
+}
