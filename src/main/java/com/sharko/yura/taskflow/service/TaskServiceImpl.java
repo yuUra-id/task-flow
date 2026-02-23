@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class TaskServiceImpl implements TaskService {
 
@@ -59,6 +62,33 @@ public class TaskServiceImpl implements TaskService {
         Task savedTask = taskRepository.save(task);
 
         return mapToTaskResponseDTO(savedTask);
+
+    }
+
+    @Override
+    public List<TaskResponseDTO> getAllTasks(String username) {
+
+        User user = userRepository.findByUsername(username);
+        if(user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        List<Task> tasks;
+        if(user.getRole().name().equals("ADMIN")) {
+
+            tasks = taskRepository.findAll();
+
+        }else{
+
+            tasks = new ArrayList<>();
+            tasks.addAll(taskRepository.findByCreatorId(user.getId()));
+            tasks.addAll(taskRepository.findByExecutorId(user.getId()));
+
+        }
+
+        List<TaskResponseDTO> taskResponseDTOList = tasks
+                .stream().map(this::mapToTaskResponseDTO).toList();
+
+        return taskResponseDTOList;
 
     }
 

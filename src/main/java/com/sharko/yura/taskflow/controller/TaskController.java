@@ -40,4 +40,12 @@ public class TaskController {
 
     }
 
+    @GetMapping
+    public ResponseEntity<List<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails) {
+
+        List<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername());
+        return ResponseEntity.ok(taskResponseDTOList);
+
+    }
+
 }
