@@ -151,6 +151,40 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
+    @Override
+    public TaskResponseDTO findByIdTask(Long taskId, String username) {
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+        TaskResponseDTO taskResponseDTO;
+
+        User user = userRepository.findByUsername(username);
+
+        if(user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        if(user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER) {
+
+            taskResponseDTO = mapToTaskResponseDTO(task);
+
+        }else {
+
+            if(task.getExecutor() != null && user.getId().equals(task.getExecutor().getId())){
+
+                taskResponseDTO = mapToTaskResponseDTO(task);
+
+            }else  {
+                throw new AccessDeniedException("Access denied");
+            }
+
+        }
+
+        return taskResponseDTO;
+
+    }
+
     //Вспомогательный метод для обновления
     private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){
         //Тут происходит проверка есть ли данные для обновления и если есть, то устанавливаем их

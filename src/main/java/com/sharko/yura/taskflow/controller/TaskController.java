@@ -60,12 +60,23 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") Long taskID) {
 
         taskService.delete(taskID);
 
         return ResponseEntity.noContent().build();
+
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<TaskResponseDTO> getByIdTask(@PathVariable("id") Long taskID,
+                                                       @AuthenticationPrincipal UserDetails userDetails) {
+
+        TaskResponseDTO taskResponseDTO = taskService.findByIdTask(taskID, userDetails.getUsername());
+
+        return ResponseEntity.ok(taskResponseDTO);
 
     }
 
