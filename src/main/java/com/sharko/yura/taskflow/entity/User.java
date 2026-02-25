@@ -115,6 +115,7 @@ public class User {
 
     public void removeCreatedTask(Task task) {
         createdTasks.remove(task);
+        task.setCreator(null);
     }
 
     public void removeExecutorTask(Task task) {

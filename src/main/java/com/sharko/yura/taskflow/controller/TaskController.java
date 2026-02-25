@@ -3,7 +3,6 @@ package com.sharko.yura.taskflow.controller;
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
-import com.sharko.yura.taskflow.repository.UserRepository;
 import com.sharko.yura.taskflow.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,9 @@ public class TaskController {
 
     @Autowired
     public TaskController(TaskService taskService) {
+
         this.taskService = taskService;
+
     }
 
     @PostMapping
@@ -55,6 +56,16 @@ public class TaskController {
 
         TaskResponseDTO taskResponseDTO = taskService.update(taskID, taskUpdateDTO, userDetails.getUsername());
         return ResponseEntity.ok().body(taskResponseDTO);
+
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") Long taskID) {
+
+        taskService.delete(taskID);
+
+        return ResponseEntity.noContent().build();
 
     }
 

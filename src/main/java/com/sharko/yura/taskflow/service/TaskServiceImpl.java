@@ -131,25 +131,46 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
-    private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){
+    @Override
+    @Transactional
+    public void delete(Long taskId) {
 
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+
+        User creator = task.getCreator();
+        if(creator != null) {
+            creator.removeCreatedTask(task);
+        }
+        User executor = task.getExecutor();
+        if(executor != null) {
+            executor.removeExecutorTask(task);
+        }
+
+        taskRepository.delete(task);
+
+    }
+
+    //Вспомогательный метод для обновления
+    private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){
+        //Тут происходит проверка есть ли данные для обновления и если есть, то устанавливаем их
         if (taskUpdateDTO.getTitle() != null) task.setTitle(taskUpdateDTO.getTitle());
         if (taskUpdateDTO.getDescription() != null) task.setDescription(taskUpdateDTO.getDescription());
         if (taskUpdateDTO.getDeadline() != null) task.setDeadline(taskUpdateDTO.getDeadline());
         if (taskUpdateDTO.getPriority() != null) task.setPriority(taskUpdateDTO.getPriority());
         if (taskUpdateDTO.getStatus() != null) task.setStatus(taskUpdateDTO.getStatus());
-
+        //Тут проверяем есть ли исполнитель у задачи
         if (taskUpdateDTO.getExecutorID() != null) {
-
+            //Если исполнитель установлен нужно проверить существует ли он.
             User executor = userRepository.findById(taskUpdateDTO.getExecutorID())
                     .orElseThrow(() -> new UserNotFoundException("Executor not found"));
-
+            //Получаем старого исполнителя и удаляем у него задачу
             User oldExecutor = task.getExecutor();
 
             if (oldExecutor != null) {
                 oldExecutor.removeExecutorTask(task);
             }
-
+            //новый исполнитель установка
             executor.addExecutorTask(task);
 
 
@@ -158,6 +179,7 @@ public class TaskServiceImpl implements TaskService {
         return task;
     }
 
+    // Внутренний метод для преобразования task в TaskResponseDTO
     private TaskResponseDTO mapToTaskResponseDTO(Task task){
 
         TaskResponseDTO taskResponseDTO = new TaskResponseDTO();
