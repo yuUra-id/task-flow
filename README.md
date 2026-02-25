@@ -1,17 +1,17 @@
 TaskFlow  
 TaskFlow - это простое веб-приложение для управление пользователями и задачами. Проект реализован на Java,  
 с использованием Spring Boot, Spring Data JPA, Spring Security, Hibernate и MySQL.  
-
+  
 Приложение позволяет вести учет пользователей и задач с разделением прав доступа по ролям.  
-
+  
 Функционал  
 Приложение поддерживает три роли пользователей  
 -ADMIN - полный контроль над системой  
 -MANAGER - управление задачами  
 -USER - ограниченный доступ к своим задачам  
-
-Текущие возможности
-ADMIN может:
+  
+Текущие возможности  
+ADMIN может:  
 -Регистрировать новых пользователей с валидацией данных (имя, email, пароль)  
 -Удалять пользователей  
 -Просматривать список всех пользователей и поиск по ID, имени или email  
@@ -23,12 +23,12 @@ USER может:
 -Создавать задачи  
 -Просматривать только свои задачи  
 -Обновлять статус своей задачи  
-
+  
 Задачи:
 -У каждой задачи есть один создатель и один исполнитель
 -У пользователя может быть несколько созданных и выполняемых задач
 -Полная реляционная связь реализована через JPA @OneToMany и @ManyToOne
-
+  
 Технологии  
 Java 21  
 Spring Boot (REST API)  
@@ -36,28 +36,31 @@ Spring Security
 Spring Data JPA/Hibernate  
 MySQL  
 Maven    
-
+  
 *Планы на развитие проекта
 -Добавление удаление задач  
 -Внедрение уведомлений о просроченных задач  
 -Поддержка JWT-аутентификации  
 -Фильтрация и сортировка задач  
-
+  
 
 #Установка и запуск  
 1. Склонировать репозиторий:  
   bash  
   git clone https://github.com/yourusername/taskflow.git  
-  cd taskflow  
-2. Настроить базу данных MySQL:  
-  CREATE DATABASE taskflow_db;  
-3. Настроить application.properties:  
+  cd taskflow
+
+3. Настроить базу данных MySQL:  
+  CREATE DATABASE taskflow_db;
+
+5. Настроить application.properties:  
   spring.datasource.url=jdbc:mysql://localhost:3306/taskflow_db  
   spring.datasource.username=root  
   spring.datasource.password=your_password  
   spring.jpa.hibernate.ddl-auto=update  
-  server.port=8080  
-4. Сборка и запуск приложения:  
+  server.port=8080
+
+7. Сборка и запуск приложения:  
   mvn clean install  
   mvn spring-boot:run
 Приложение будет доступно по адресу: http://localhost:8080
