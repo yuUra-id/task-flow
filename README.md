@@ -96,6 +96,7 @@ TASK API
 | PATCH  | /api/tasks/{id}      | Все роли                | Обновить задачу            |
 | GET    | /api/tasks           | Все роли                | Получить все задачи        |  
 | DELETE | /api/tasks/{id}      | ADMIN, MANAGER          | Удаление задачи            |  
+| GET    | /api/tasks/{id}      | Все роли                | поиск задачи по id         |  
 
 
 Запрос на создание задачи:  
