@@ -1,5 +1,5 @@
 TaskFlow  
-TaskFlow - это простое веб-приложение для управление пользователями и задачами. Проект реализован на Java,  
+TaskFlow - это простое веб-приложение для управление пользователями и задачами. Проект реализован на Java, 
 с использованием Spring Boot, Spring Data JPA, Spring Security, Hibernate и MySQL.  
   
 Приложение позволяет вести учет пользователей и задач с разделением прав доступа по ролям.  
@@ -24,10 +24,10 @@ USER может:
 -Просматривать только свои задачи  
 -Обновлять статус своей задачи  
   
-Задачи:
--У каждой задачи есть один создатель и один исполнитель
--У пользователя может быть несколько созданных и выполняемых задач
--Полная реляционная связь реализована через JPA @OneToMany и @ManyToOne
+Задачи:  
+-У каждой задачи есть один создатель и один исполнитель  
+-У пользователя может быть несколько созданных и выполняемых задач  
+-Полная реляционная связь реализована через JPA @OneToMany и @ManyToOne  
   
 Технологии  
 Java 21  
@@ -37,8 +37,8 @@ Spring Data JPA/Hibernate
 MySQL  
 Maven    
   
-*Планы на развитие проекта
--Внедрение уведомлений о просроченных задач  
+*Планы на развитие проекта  
+-Внедрение уведомлений о просроченных задач   
 -Поддержка JWT-аутентификации  
 -Фильтрация и сортировка задач  
   
@@ -47,24 +47,24 @@ Maven
 1. Склонировать репозиторий:  
   bash  
   git clone https://github.com/yourusername/taskflow.git  
-  cd taskflow
+  cd taskflow  
 
 3. Настроить базу данных MySQL:  
-  CREATE DATABASE taskflow_db;
+  CREATE DATABASE taskflow_db;  
 
 5. Настроить application.properties:  
   spring.datasource.url=jdbc:mysql://localhost:3306/taskflow_db  
   spring.datasource.username=root  
   spring.datasource.password=your_password  
   spring.jpa.hibernate.ddl-auto=update  
-  server.port=8080
+  server.port=8080  
 
 7. Сборка и запуск приложения:  
   mvn clean install  
-  mvn spring-boot:run
-Приложение будет доступно по адресу: http://localhost:8080
+  mvn spring-boot:run  
+Приложение будет доступно по адресу: http://localhost:8080  
 
-USER API
+USER API  
 | Метод | URL                 | Роль                    | Описание                           |  
 |-------|---------------------|-------------------------|------------------------------------|  
 | POST  | /api/users          | ADMIN                   | Создать пользователя               |  
@@ -90,7 +90,7 @@ USER API
         "email": "rabaza@gmail.com"  
 }  
 
-TASK API
+TASK API  
 | Метод  | URL                  | Роль                    | Описание                   |
 |--------|----------------------|-------------------------|----------------------------|
 | POST   | /api/tasks           | ADMIN, MANAGER          | Создать задачу             |
