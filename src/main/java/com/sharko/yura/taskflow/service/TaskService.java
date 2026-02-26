@@ -18,4 +18,8 @@ public interface TaskService {
 
     TaskResponseDTO findByIdTask(Long taskId, String username);
 
+    List<TaskResponseDTO> findAllTasksExecutor(Long executorId);
+
+    List<TaskResponseDTO> findAllMyTasks(String username);
+
 }

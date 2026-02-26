@@ -185,6 +185,31 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
+    @Override
+    public List<TaskResponseDTO> findAllTasksExecutor(Long executorId) {
+
+        User user = userRepository.findById(executorId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<Task> tasks = taskRepository.findByExecutorId(user.getId());
+
+        return tasks.stream().map(this::mapToTaskResponseDTO).toList();
+
+    }
+
+    @Override
+    public List<TaskResponseDTO> findAllMyTasks(String username) {
+
+        User user = userRepository.findByUsername(username);
+        if(user == null) {
+            throw new UserNotFoundException("User not found");
+        }
+
+        List<Task> tasks = taskRepository.findByExecutorId(user.getId());
+
+        return tasks.stream().map(this::mapToTaskResponseDTO).toList();
+    }
+
     //Вспомогательный метод для обновления
     private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){
         //Тут происходит проверка есть ли данные для обновления и если есть, то устанавливаем их

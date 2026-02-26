@@ -80,4 +80,24 @@ public class TaskController {
 
     }
 
+    @GetMapping("/{id}/executor/tasks")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId){
+
+        List<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId);
+
+        return ResponseEntity.ok(listTasksExecutor);
+
+    }
+
+    @GetMapping("/my")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails) {
+
+        List<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername());
+
+        return ResponseEntity.ok(listTasksExecutor);
+
+    }
+
 }
