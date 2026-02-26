@@ -3,6 +3,8 @@ package com.sharko.yura.taskflow.repository;
 import com.sharko.yura.taskflow.entity.Task;
 import com.sharko.yura.taskflow.entity.TaskPriority;
 import com.sharko.yura.taskflow.entity.TaskStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -23,7 +25,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     /**
      * Получить все задачи, назначенные конкретному исполнителю.
      */
-    List<Task> findByExecutorId(Long executorId);
+    Page<Task> findByExecutorId(Long executorId, Pageable pageable);
     /**
      * Получить задачи по создателю и статусу.
      */

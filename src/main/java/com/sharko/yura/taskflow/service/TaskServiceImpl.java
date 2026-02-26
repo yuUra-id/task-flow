@@ -9,6 +9,9 @@ import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.repository.TaskRepository;
 import com.sharko.yura.taskflow.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,28 +68,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDTO> getAllTasks(String username) {
+    public Page<TaskResponseDTO> getAllTasks(String username, Pageable pageable) {
 
         User user = userRepository.findByUsername(username);
         if(user == null) {
             throw new UserNotFoundException("User not found");
         }
-        List<Task> tasks;
+        Page<Task> tasks;
         if(user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER) {
 
-            tasks = taskRepository.findAll();
+            tasks = taskRepository.findAll(pageable);
 
         }else{
 
-            tasks = new ArrayList<>();
-            tasks.addAll(taskRepository.findByExecutorId(user.getId()));
+            tasks = taskRepository.findByExecutorId(user.getId(), pageable);
 
         }
 
-        List<TaskResponseDTO> taskResponseDTOList = tasks
-                .stream().map(this::mapToTaskResponseDTO).toList();
-
-        return taskResponseDTOList;
+        return tasks.map(this::mapToTaskResponseDTO);
 
     }
 
@@ -186,28 +185,28 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskResponseDTO> findAllTasksExecutor(Long executorId) {
+    public Page<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable) {
 
         User user = userRepository.findById(executorId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        List<Task> tasks = taskRepository.findByExecutorId(user.getId());
+        Page<Task> tasks = taskRepository.findByExecutorId(user.getId(), pageable);
 
-        return tasks.stream().map(this::mapToTaskResponseDTO).toList();
+        return tasks.map(this::mapToTaskResponseDTO);
 
     }
 
     @Override
-    public List<TaskResponseDTO> findAllMyTasks(String username) {
+    public Page<TaskResponseDTO> findAllMyTasks(String username, Pageable pageable) {
 
         User user = userRepository.findByUsername(username);
         if(user == null) {
             throw new UserNotFoundException("User not found");
         }
 
-        List<Task> tasks = taskRepository.findByExecutorId(user.getId());
+        Page<Task> tasks = taskRepository.findByExecutorId(user.getId(), pageable);
 
-        return tasks.stream().map(this::mapToTaskResponseDTO).toList();
+        return tasks.map(this::mapToTaskResponseDTO);
     }
 
     //Вспомогательный метод для обновления
