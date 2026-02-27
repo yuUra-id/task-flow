@@ -1,5 +1,6 @@
 package com.sharko.yura.taskflow.service;
 
+import com.sharko.yura.taskflow.dto.PageResponse;
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
@@ -11,7 +12,7 @@ public interface TaskService {
 
     TaskResponseDTO create(TaskCreateDTO taskCreateDTO, String usernameCreator);
 
-    Page<TaskResponseDTO> getAllTasks(String username, Pageable pageable);
+    PageResponse<TaskResponseDTO> getAllTasks(String username, Pageable pageable);
 
     TaskResponseDTO update(Long taskId, TaskUpdateDTO taskUpdateDTO, String username);
 
@@ -19,8 +20,8 @@ public interface TaskService {
 
     TaskResponseDTO findByIdTask(Long taskId, String username);
 
-    Page<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable);
+    PageResponse<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable);
 
-    Page<TaskResponseDTO> findAllMyTasks(String username,  Pageable pageable);
+    PageResponse<TaskResponseDTO> findAllMyTasks(String username,  Pageable pageable);
 
 }

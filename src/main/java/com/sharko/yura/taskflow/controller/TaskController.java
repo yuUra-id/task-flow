@@ -1,5 +1,6 @@
 package com.sharko.yura.taskflow.controller;
 
+import com.sharko.yura.taskflow.dto.PageResponse;
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
@@ -41,10 +42,10 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails,
-                                                             Pageable pageable) {
+    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                                                     Pageable pageable) {
 
-        Page<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(), pageable);
+        PageResponse<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(), pageable);
         return ResponseEntity.ok(taskResponseDTOList);
 
     }
@@ -83,10 +84,10 @@ public class TaskController {
 
     @GetMapping("/{id}/executor/tasks")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<Page<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId,
+    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId,
                                                                          Pageable pageable) {
 
-        Page<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId,  pageable);
+        PageResponse<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId,  pageable);
 
         return ResponseEntity.ok(listTasksExecutor);
 
@@ -94,10 +95,10 @@ public class TaskController {
 
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails,
                                                                Pageable pageable) {
 
-        Page<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername(),  pageable);
+        PageResponse<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername(),  pageable);
 
         return ResponseEntity.ok(listTasksExecutor);
 
