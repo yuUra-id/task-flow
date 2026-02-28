@@ -29,6 +29,7 @@ USER может:
 -У пользователя может быть несколько созданных и выполняемых задач  
 -Полная реляционная связь реализована через JPA @OneToMany и @ManyToOne  
 -Пагинация списков задач
+-Фильтрация реализована через Specification (по status, priority, executorID, deadline)  
   
 Технологии  
 Java 21  
@@ -97,9 +98,7 @@ TASK API
 | PATCH  | /api/tasks/{id}               | Все роли                | Обновить задачу                      |
 | GET    | /api/tasks                    | Все роли                | Получить все задачи                  |  
 | DELETE | /api/tasks/{id}               | ADMIN, MANAGER          | Удаление задачи                      |  
-| GET    | /api/tasks/{id}               | Все роли                | Поиск задачи по id                   |  
-| GET    | /api/tasks/{id}/executor/tasks| ADMIN, MANAGER          | Получение списка задач по исполнителю|  
-| GET    | /api/tasks/my                 | Все роли                | Получение списка своих задач         |  
+| GET    | /api/tasks/{id}               | Все роли                | Поиск задачи по id                   |   
   
 Запрос на создание задачи:  
 {  
