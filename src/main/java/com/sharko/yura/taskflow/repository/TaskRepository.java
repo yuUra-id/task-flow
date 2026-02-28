@@ -6,6 +6,7 @@ import com.sharko.yura.taskflow.entity.TaskStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ import java.util.List;
  * создатель, исполнитель, статус, приоритет и срок выполнения.
  * Наследуется от JpaRepository, что обеспечивает стандартные CRUD-операции.
  */
-public interface TaskRepository extends JpaRepository<Task,Long>{
+public interface TaskRepository extends JpaRepository<Task,Long>, JpaSpecificationExecutor<Task> {
 
     /**
      * Получить все задачи, созданные конкретным пользователем.

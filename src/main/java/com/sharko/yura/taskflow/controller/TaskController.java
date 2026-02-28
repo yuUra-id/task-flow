@@ -1,13 +1,9 @@
 package com.sharko.yura.taskflow.controller;
 
-import com.sharko.yura.taskflow.dto.PageResponse;
-import com.sharko.yura.taskflow.dto.TaskCreateDTO;
-import com.sharko.yura.taskflow.dto.TaskResponseDTO;
-import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
+import com.sharko.yura.taskflow.dto.*;
 import com.sharko.yura.taskflow.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,10 +38,11 @@ public class TaskController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails,
-                                                                     Pageable pageable) {
+    public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                                                        TaskFilterDTO taskFilterDTO,
+                                                                        Pageable pageable) {
 
-        PageResponse<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(), pageable);
+        PageResponseDTO<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(), pageable);
         return ResponseEntity.ok(taskResponseDTOList);
 
     }
@@ -84,10 +81,10 @@ public class TaskController {
 
     @GetMapping("/{id}/executor/tasks")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId,
-                                                                         Pageable pageable) {
+    public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId,
+                                                                                    Pageable pageable) {
 
-        PageResponse<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId,  pageable);
+        PageResponseDTO<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId,  pageable);
 
         return ResponseEntity.ok(listTasksExecutor);
 
@@ -95,10 +92,10 @@ public class TaskController {
 
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<PageResponse<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails,
-                                                               Pageable pageable) {
+    public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails,
+                                                                          Pageable pageable) {
 
-        PageResponse<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername(),  pageable);
+        PageResponseDTO<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername(),  pageable);
 
         return ResponseEntity.ok(listTasksExecutor);
 

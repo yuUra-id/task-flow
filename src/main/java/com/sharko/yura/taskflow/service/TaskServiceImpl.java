@@ -1,6 +1,6 @@
 package com.sharko.yura.taskflow.service;
 
-import com.sharko.yura.taskflow.dto.PageResponse;
+import com.sharko.yura.taskflow.dto.PageResponseDTO;
 import com.sharko.yura.taskflow.dto.TaskCreateDTO;
 import com.sharko.yura.taskflow.dto.TaskResponseDTO;
 import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PageResponse<TaskResponseDTO> getAllTasks(String username, Pageable pageable) {
+    public PageResponseDTO<TaskResponseDTO> getAllTasks(String username, Pageable pageable) {
 
         User user = userRepository.findByUsername(username);
         if(user == null) {
@@ -85,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
 
         Page<TaskResponseDTO> dtoPage = tasks.map(this::mapToTaskResponseDTO);
 
-        return PageResponse.mapToPageResponse(dtoPage);
+        return PageResponseDTO.mapToPageResponse(dtoPage);
 
     }
 
@@ -185,7 +185,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PageResponse<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable) {
+    public PageResponseDTO<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable) {
 
         User user = userRepository.findById(executorId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -194,12 +194,12 @@ public class TaskServiceImpl implements TaskService {
 
         Page<TaskResponseDTO> taskResponseDTOPage = tasks.map(this::mapToTaskResponseDTO);
 
-        return PageResponse.mapToPageResponse(taskResponseDTOPage);
+        return PageResponseDTO.mapToPageResponse(taskResponseDTOPage);
 
     }
 
     @Override
-    public PageResponse<TaskResponseDTO> findAllMyTasks(String username, Pageable pageable) {
+    public PageResponseDTO<TaskResponseDTO> findAllMyTasks(String username, Pageable pageable) {
 
         User user = userRepository.findByUsername(username);
         if(user == null) {
@@ -210,7 +210,7 @@ public class TaskServiceImpl implements TaskService {
 
         Page<TaskResponseDTO> taskResponseDTOPage = tasks.map(this::mapToTaskResponseDTO);
 
-        return PageResponse.mapToPageResponse(taskResponseDTOPage);
+        return PageResponseDTO.mapToPageResponse(taskResponseDTOPage);
     }
 
     //Вспомогательный метод для обновления
