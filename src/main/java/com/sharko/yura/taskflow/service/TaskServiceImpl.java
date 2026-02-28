@@ -1,17 +1,17 @@
 package com.sharko.yura.taskflow.service;
 
-import com.sharko.yura.taskflow.dto.PageResponseDTO;
-import com.sharko.yura.taskflow.dto.TaskCreateDTO;
-import com.sharko.yura.taskflow.dto.TaskResponseDTO;
-import com.sharko.yura.taskflow.dto.TaskUpdateDTO;
+import com.sharko.yura.taskflow.dto.*;
 import com.sharko.yura.taskflow.entity.*;
 import com.sharko.yura.taskflow.exception.TaskNotFoundException;
 import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.repository.TaskRepository;
 import com.sharko.yura.taskflow.repository.UserRepository;
+import com.sharko.yura.taskflow.repository.specification.TaskRoleSpecification;
+import com.sharko.yura.taskflow.repository.specification.TaskSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,22 +66,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public PageResponseDTO<TaskResponseDTO> getAllTasks(String username, Pageable pageable) {
+    public PageResponseDTO<TaskResponseDTO> getAllTasks(String username, TaskFilterDTO taskFilterDTO,
+                                                        Pageable pageable) {
 
         User user = userRepository.findByUsername(username);
         if(user == null) {
             throw new UserNotFoundException("User not found");
         }
-        Page<Task> tasks;
-        if(user.getRole() == Role.ADMIN || user.getRole() == Role.MANAGER) {
 
-            tasks = taskRepository.findAll(pageable);
+        Specification<Task> roleSpec = TaskRoleSpecification.forUser(user);
 
-        }else{
+        Specification<Task> filterSpec = TaskSpecification.build(taskFilterDTO);
 
-            tasks = taskRepository.findByExecutorId(user.getId(), pageable);
+        Specification<Task> finalSpec = roleSpec.and(filterSpec);
 
-        }
+        Page<Task> tasks =  taskRepository.findAll(finalSpec, pageable);
 
         Page<TaskResponseDTO> dtoPage = tasks.map(this::mapToTaskResponseDTO);
 
@@ -184,34 +183,6 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
-    @Override
-    public PageResponseDTO<TaskResponseDTO> findAllTasksExecutor(Long executorId, Pageable pageable) {
-
-        User user = userRepository.findById(executorId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        Page<Task> tasks = taskRepository.findByExecutorId(user.getId(), pageable);
-
-        Page<TaskResponseDTO> taskResponseDTOPage = tasks.map(this::mapToTaskResponseDTO);
-
-        return PageResponseDTO.mapToPageResponse(taskResponseDTOPage);
-
-    }
-
-    @Override
-    public PageResponseDTO<TaskResponseDTO> findAllMyTasks(String username, Pageable pageable) {
-
-        User user = userRepository.findByUsername(username);
-        if(user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-
-        Page<Task> tasks = taskRepository.findByExecutorId(user.getId(), pageable);
-
-        Page<TaskResponseDTO> taskResponseDTOPage = tasks.map(this::mapToTaskResponseDTO);
-
-        return PageResponseDTO.mapToPageResponse(taskResponseDTOPage);
-    }
 
     //Вспомогательный метод для обновления
     private Task taskUpdateDTOMapTask(TaskUpdateDTO taskUpdateDTO, Task task){

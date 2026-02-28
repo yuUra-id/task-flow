@@ -42,7 +42,9 @@ public class TaskController {
                                                                         TaskFilterDTO taskFilterDTO,
                                                                         Pageable pageable) {
 
-        PageResponseDTO<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(), pageable);
+        PageResponseDTO<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(),
+                taskFilterDTO, pageable);
+
         return ResponseEntity.ok(taskResponseDTOList);
 
     }
@@ -76,28 +78,6 @@ public class TaskController {
         TaskResponseDTO taskResponseDTO = taskService.findByIdTask(taskID, userDetails.getUsername());
 
         return ResponseEntity.ok(taskResponseDTO);
-
-    }
-
-    @GetMapping("/{id}/executor/tasks")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllTasksByIdExecutor(@PathVariable("id") Long userId,
-                                                                                    Pageable pageable) {
-
-        PageResponseDTO<TaskResponseDTO> listTasksExecutor = taskService.findAllTasksExecutor(userId,  pageable);
-
-        return ResponseEntity.ok(listTasksExecutor);
-
-    }
-
-    @GetMapping("/my")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllMyTasks(@AuthenticationPrincipal UserDetails userDetails,
-                                                                          Pageable pageable) {
-
-        PageResponseDTO<TaskResponseDTO> listTasksExecutor = taskService.findAllMyTasks(userDetails.getUsername(),  pageable);
-
-        return ResponseEntity.ok(listTasksExecutor);
 
     }
 
