@@ -2,6 +2,7 @@ package com.sharko.yura.taskflow.controller;
 
 import com.sharko.yura.taskflow.auth.AuthResponseDTO;
 import com.sharko.yura.taskflow.auth.LoginRequestDTO;
+import com.sharko.yura.taskflow.auth.RefreshTokenRequestDTO;
 import com.sharko.yura.taskflow.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,13 @@ public class AuthController {
     public AuthResponseDTO login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
         return authService.login(loginRequestDTO);
+
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+
+        return authService.refreshToken(refreshTokenRequestDTO.getRefreshToken());
 
     }
 

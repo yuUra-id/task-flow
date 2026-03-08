@@ -16,13 +16,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Конфигурация безопасности приложения TaskFlow.
- * Настройка HTTP-безопасности
- * Отключение CSRF (для REST API)
- * Определение правил авторизации запросов
- * Создание бина для хеширования паролей
- * На текущем этапе разработки все HTTP-запросы разрешены (permitAll),
- * так как проект находится в стадии разработки и тестирования.
+ * Конфигурационный класс безопасности приложения.
+ * Настраивает Spring Security для работы с JWT аутентификацией.
+ * Основные функции:
+ * - отключение CSRF
+ * - stateless аутентификация
+ * - подключение JWT фильтра
+ * - настройка доступа к API
+ * - конфигурация PasswordEncoder
+ * - предоставление AuthenticationManager
  */
 @EnableMethodSecurity
 @Configuration
@@ -32,6 +34,11 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * Создает JWT фильтр для проверки токенов
+     * в каждом входящем HTTP запросе.
+     * @return JwtAuthenticationFilter
+     */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
 
@@ -39,15 +46,25 @@ public class SecurityConfig {
 
     }
 
+    /**
+     * Основная конфигурация безопасности HTTP.
+     * - отключение CSRF
+     * - stateless сессии
+     * - разрешение доступа к /api/auth/**
+     * - аутентификация для остальных запросов
+     * - подключение JWT фильтра
+     * @param http объект конфигурации безопасности
+     * @return SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
+        http    //отключаем защиту CSRF
                 .csrf(csrf -> csrf.disable())
-
+                //отключаем создание HTTP сессии данные будут храниться не в сессии ,а в токене.
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                //Настройка правил авторизации
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
@@ -58,6 +75,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Кодировщик паролей BCrypt.
+     * Используется для безопасного хранения
+     * паролей пользователей в базе данных.
+     * @return PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
 
@@ -65,6 +88,13 @@ public class SecurityConfig {
 
     }
 
+    /**
+     * Предоставляет AuthenticationManager
+     * для выполнения аутентификации пользователя.
+     * Используется при логине.
+     * @param configuration конфигурация аутентификации
+     * @return AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
 

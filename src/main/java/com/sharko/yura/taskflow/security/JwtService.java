@@ -12,6 +12,14 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+/**
+ * Сервис работы с JWT токенами.
+ * Данный сервис отвечает за:
+ * - генерацию access token
+ * - генерацию refresh token
+ * - извлечение данных из токенов
+ * - проверку валидности токенов
+ */
 @Service
 public class JwtService {
 
@@ -54,37 +62,63 @@ public class JwtService {
 
     }
 
+    /**
+     * Извлекает роль пользователя из токена.
+     * @param token JWT токен
+     * @return роль пользователя
+     */
     public String extractRole(String token) {
 
         return getClaimsFromToken(token).get("role", String.class);
 
     }
 
+    /**
+     * Извлекает тип токена (access или refresh).
+     * @param token JWT токен
+     * @return тип токена
+     */
     public String extractTokenType(String token) {
 
         return getClaimsFromToken(token).get("type", String.class);
 
     }
 
+    /**
+     * Проверяет валидность access token.
+     * Проверка через общий метод isTokenValid
+     * @param token JWT токен
+     * @param userDetails данные пользователя
+     * @return true если токен валиден
+     */
     public boolean isAccessTokenValid(String token, UserDetails userDetails) {
 
         return isTokenValid(token, userDetails, "access");
 
     }
 
+    /**
+     * Проверяет валидность refresh token.
+     * @param token JWT токен
+     * @param userDetails данные пользователя
+     * @return true если токен валиден
+     */
     public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
 
         return isTokenValid(token, userDetails, "refresh");
 
     }
 
-
-
     /**
-     * Проверяет, валиден ли токен для данного пользователя.
+     * Универсальный метод проверки токена.
+     * Метод проверяет:
+     * совпадает ли username в токене с пользователем
+     * совпадает ли тип токена
+     * не истек ли срок действия токена
      * @param token JWT токен
-     * @param userDetails данные пользователя из Spring Security
-     * @return true если токен валиден, иначе false
+     * @param userDetails пользователь
+     * @param expectedType ожидаемый тип токена
+     * @return true если токен валиден
      */
     private boolean isTokenValid(String token, UserDetails userDetails, String expectedType) {
 
