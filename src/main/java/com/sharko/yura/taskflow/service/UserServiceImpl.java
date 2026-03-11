@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO create(UserCreateDTO userCreateDTO) {
 
-        log.info("USER: attempt create user");
+        log.info("USER: attempt create user with name {}", userCreateDTO.getUsername());
 
         log.debug("USER: checking passwords when creating a user (password and passwordConfirm)");
         if(!userCreateDTO.isPasswordConfirmed()){
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
         log.debug("USER: encoding password");
         String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
 
-        log.debug("USER: creating a new user");
+        log.debug("USER: creating a new user with name {}", userCreateDTO.getUsername());
         User user = new User();
         user.setUsername(userCreateDTO.getUsername());
         user.setEmail(userCreateDTO.getEmail());
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
         log.debug("USER: saving new user");
         User saveUser = userRepository.save(user);
 
-        log.info("USER: new user successfully created and saved");
+        log.info("USER: new user with name {} successfully created and saved", userCreateDTO.getUsername());
         return mapToDTO(saveUser);
     }
 
@@ -128,27 +128,39 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO dto) {
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+        log.info("USER: attempt update user with name {}", dto.getUsername());
 
+        log.debug("USER: checking exists user with ID: {}", id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User with id " + id + " not found"));
+
+        log.debug("USER: find user with username {}", dto.getUsername());
         User userByUsername = userRepository.findByUsername(dto.getUsername());
+
         if(userByUsername!=null && !userByUsername.getId().equals(id)){
 
             throw new UserAlreadyExistsException("User with name " + dto.getUsername() + " already exists");
 
         }
 
+        log.debug("USER: find user with email {}", dto.getEmail());
         User userByEmail = userRepository.findByEmail(dto.getEmail());
+        
         if(userByEmail!=null && !userByEmail.getId().equals(id)){
 
             throw new UserWithEmailAlreadyExistsException("User with email " + dto.getEmail() + " already exists");
 
         }
 
+        log.debug("USER: update username for user with ID: {}", id);
         user.setUsername(dto.getUsername());
+        log.debug("USER: update email for user with ID: {}", id);
         user.setEmail(dto.getEmail());
+        log.debug("USER: saving username and email for user with ID {}", id);
         userRepository.save(user);
 
+        log.info("USER: user with ID {} successfully creating and saving", id);
         return mapToDTO(user);
 
     }

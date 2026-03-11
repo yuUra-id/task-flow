@@ -1,6 +1,8 @@
 package com.sharko.yura.taskflow.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,11 +25,13 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     //Если пользователь не найден
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleException(
             UserNotFoundException exception, HttpServletRequest request) {
-
+        log.warn("EXCEPTION: user not found");
         return buildErrorResponse(exception, request, HttpStatus.NOT_FOUND);
 
     }
