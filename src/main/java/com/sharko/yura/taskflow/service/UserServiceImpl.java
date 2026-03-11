@@ -53,13 +53,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDTO> findAll() {
 
+        log.info("USER: attempt receive all users");
+
+        log.debug("USER: receive users in data base");
         List<User> users = userRepository.findAll();
+
         List<UserResponseDTO> userResponseDTOS = new ArrayList<>();
+        log.debug("USER: mapping USER in UserResponseDTO");
         for (User user : users) {
             UserResponseDTO userResponseDTO = mapToDTO(user);
             userResponseDTOS.add(userResponseDTO);
         }
 
+        log.info("USER: successfully receive list users");
         return userResponseDTOS;
 
     }
@@ -68,9 +74,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO findById(Long id) {
 
+        log.info("USER: attempt receive user by ID: {}", id);
+
+        log.debug("USER: checking exists user with ID: {}", id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 
+        log.info("USER: successfully receive user with ID: {}", id);
         return mapToDTO(user);
 
     }
@@ -146,7 +156,7 @@ public class UserServiceImpl implements UserService {
 
         log.debug("USER: find user with email {}", dto.getEmail());
         User userByEmail = userRepository.findByEmail(dto.getEmail());
-        
+
         if(userByEmail!=null && !userByEmail.getId().equals(id)){
 
             throw new UserWithEmailAlreadyExistsException("User with email " + dto.getEmail() + " already exists");
@@ -170,10 +180,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(Long id) {
 
+        log.info("USER: attempt deleting user with ID: {}", id);
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
 
         userRepository.delete(user);
+        log.info("USER: user with ID: {} successfully delete", id);
 
     }
 
