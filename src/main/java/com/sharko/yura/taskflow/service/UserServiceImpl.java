@@ -9,6 +9,8 @@ import com.sharko.yura.taskflow.exception.UserAlreadyExistsException;
 import com.sharko.yura.taskflow.exception.UserNotFoundException;
 import com.sharko.yura.taskflow.exception.UserWithEmailAlreadyExistsException;
 import com.sharko.yura.taskflow.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,10 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,  PasswordEncoder passwordEncoder) {
@@ -76,28 +80,46 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO create(UserCreateDTO userCreateDTO) {
 
+        log.info("USER: attempt create user");
+
+        log.debug("USER: checking passwords when creating a user (password and passwordConfirm)");
         if(!userCreateDTO.isPasswordConfirmed()){
+
+            log.warn("USER: passwords don't match");
             throw new PasswordMismatchException("Mismatch password");
+
         }
 
+        log.debug("USER: checking exists user with name {}", userCreateDTO.getUsername());
         if(userRepository.existsByUsername(userCreateDTO.getUsername())){
+
+            log.warn("USER: user with name {} already exists", userCreateDTO.getUsername());
             throw new UserAlreadyExistsException("User with name " + userCreateDTO.getUsername() + " already exists");
+
         }
 
+        log.debug("USER: checking exists user with email {}", userCreateDTO.getEmail());
         if(userRepository.existsByEmail(userCreateDTO.getEmail())){
+
+            log.warn("USER: user with email {} already exists", userCreateDTO.getEmail());
             throw new UserWithEmailAlreadyExistsException("User with email " + userCreateDTO.getEmail() + " already exists");
+
         }
 
+        log.debug("USER: encoding password");
         String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
 
+        log.debug("USER: creating a new user");
         User user = new User();
         user.setUsername(userCreateDTO.getUsername());
         user.setEmail(userCreateDTO.getEmail());
         user.setPassword(encodedPassword);
         user.setRole(userCreateDTO.getRole());
 
+        log.debug("USER: saving new user");
         User saveUser = userRepository.save(user);
 
+        log.info("USER: new user successfully created and saved");
         return mapToDTO(saveUser);
     }
 
