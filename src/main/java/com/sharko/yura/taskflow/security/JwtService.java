@@ -1,11 +1,14 @@
 package com.sharko.yura.taskflow.security;
 
+import com.sharko.yura.taskflow.controller.UserController;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +28,12 @@ public class JwtService {
 
     private final JwtProperties jwtProperties;
 
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
+
     public JwtService(JwtProperties jwtProperties) {
+
         this.jwtProperties = jwtProperties;
+
     }
 
     /**
@@ -36,6 +43,7 @@ public class JwtService {
      */
     public String generateAccessToken(String username, String role) {
 
+        log.debug("JWT: generating access token for user {} with role {}", username, role);
         return generateToken(username, role, "access", jwtProperties.getAccessTokenExpiration());
 
     }
@@ -47,7 +55,11 @@ public class JwtService {
      */
     public String extractUsername(String token) {
 
-        return getClaimsFromToken(token).getSubject();
+        log.debug("JWT: extracting username from token");
+        String username = getClaimsFromToken(token).getSubject();
+
+        log.debug("JWT: username {} extracted from token", username);
+        return username;
 
     }
 
@@ -58,6 +70,7 @@ public class JwtService {
      */
     public String generateRefreshToken(String username) {
 
+        log.debug("JWT: generating refresh token for user {}", username);
         return generateToken(username, null, "refresh", jwtProperties.getRefreshTokenExpiration());
 
     }
@@ -69,7 +82,11 @@ public class JwtService {
      */
     public String extractRole(String token) {
 
-        return getClaimsFromToken(token).get("role", String.class);
+        log.debug("JWT: extracting role from token");
+        String role = getClaimsFromToken(token).get("role", String.class);
+
+        log.debug("JWT: role {} extracted from token", role);
+        return role;
 
     }
 
@@ -80,7 +97,11 @@ public class JwtService {
      */
     public String extractTokenType(String token) {
 
-        return getClaimsFromToken(token).get("type", String.class);
+        log.debug("JWT: extracting type from token");
+        String tokenType = getClaimsFromToken(token).get("type", String.class);
+
+        log.debug("JWT: token type {} extracted", tokenType);
+        return tokenType;
 
     }
 
@@ -93,6 +114,7 @@ public class JwtService {
      */
     public boolean isAccessTokenValid(String token, UserDetails userDetails) {
 
+        log.debug("JWT: validating access token for user {}", userDetails.getUsername());
         return isTokenValid(token, userDetails, "access");
 
     }
@@ -105,6 +127,7 @@ public class JwtService {
      */
     public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
 
+        log.debug("JWT: validating refresh token for user {}", userDetails.getUsername());
         return isTokenValid(token, userDetails, "refresh");
 
     }
@@ -147,6 +170,7 @@ public class JwtService {
      */
     private String generateToken(String username, String role, String type, long expiration) {
 
+        log.debug("JWT: building {} token for user {}", type, username);
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setSubject(username)
                 .claim("type", type)
@@ -155,10 +179,14 @@ public class JwtService {
                 .signWith(getSignKey());
 
         if(role != null) {
+            log.debug("JWT: adding role {} to {} token for user {}", role, type, username);
             jwtBuilder.claim("role", role);
         }
 
-        return jwtBuilder.compact();
+        String token = jwtBuilder.compact();
+
+        log.debug("JWT: {} token successfully generated for user {}", type, username);
+        return token;
 
     }
 
@@ -167,6 +195,7 @@ public class JwtService {
      * @return SecretKey для подписи
      */
     private SecretKey getSignKey(){
+        log.debug("JWT: generating signing key from configured seecret");
         //Берем ключ из конфигурации (Base64 строка)
         String secretKey = jwtProperties.getSecret();
         //Декодируем в массив байт
@@ -183,6 +212,7 @@ public class JwtService {
      */
     private Claims getClaimsFromToken(String token) {
 
+        log.debug("JWT: parsing token claims");
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
@@ -197,10 +227,12 @@ public class JwtService {
      */
     private boolean isTokenExpired(String token) {
 
-        return getClaimsFromToken(token)
+        boolean expired = getClaimsFromToken(token)
                 .getExpiration()
                 .before(new Date());
 
+        log.debug("JWT: token expiration check result = {}", expired);
+        return expired;
     }
 
 }

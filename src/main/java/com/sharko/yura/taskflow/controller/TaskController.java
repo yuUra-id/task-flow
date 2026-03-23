@@ -3,6 +3,7 @@ package com.sharko.yura.taskflow.controller;
 import com.sharko.yura.taskflow.dto.*;
 import com.sharko.yura.taskflow.service.TaskService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -30,6 +32,8 @@ public class TaskController {
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskCreateDTO taskCreateDTO,
                                                       @AuthenticationPrincipal UserDetails userDetails) {
 
+        log.info("TASK API: create task request by user {}", userDetails.getUsername());
+
         TaskResponseDTO taskResponseDTO = taskService.create(taskCreateDTO, userDetails.getUsername());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(taskResponseDTO);
@@ -41,6 +45,8 @@ public class TaskController {
     public ResponseEntity<PageResponseDTO<TaskResponseDTO>> getAllTasks(@AuthenticationPrincipal UserDetails userDetails,
                                                                         TaskFilterDTO taskFilterDTO,
                                                                         Pageable pageable) {
+
+        log.info("TASK API: get all tasks request by user {}", userDetails.getUsername());
 
         PageResponseDTO<TaskResponseDTO> taskResponseDTOList = taskService.getAllTasks(userDetails.getUsername(),
                 taskFilterDTO, pageable);
@@ -55,6 +61,8 @@ public class TaskController {
                                                       @Valid @RequestBody TaskUpdateDTO taskUpdateDTO,
                                                       @PathVariable("id") Long taskID) {
 
+        log.info("TASK API: update task request taskId={}, user={}", taskID, userDetails.getUsername());
+
         TaskResponseDTO taskResponseDTO = taskService.update(taskID, taskUpdateDTO, userDetails.getUsername());
         return ResponseEntity.ok().body(taskResponseDTO);
 
@@ -63,6 +71,8 @@ public class TaskController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") Long taskID) {
+
+        log.info("TASK API: deleted task request taskId={}", taskID);
 
         taskService.delete(taskID);
 
@@ -74,6 +84,8 @@ public class TaskController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<TaskResponseDTO> getByIdTask(@PathVariable("id") Long taskID,
                                                        @AuthenticationPrincipal UserDetails userDetails) {
+
+        log.info("TASK API: get by ID={} task for user={}", taskID, userDetails.getUsername());
 
         TaskResponseDTO taskResponseDTO = taskService.findByIdTask(taskID, userDetails.getUsername());
 

@@ -5,6 +5,8 @@ import com.sharko.yura.taskflow.dto.UserResponseDTO;
 import com.sharko.yura.taskflow.dto.UserUpdateDTO;
 import com.sharko.yura.taskflow.service.UserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private UserService userService;
 
     @Autowired
@@ -42,6 +45,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
 
+        log.info("USER API: create user request by user {}", userCreateDTO.getUsername());
+
         UserResponseDTO userResponseDTO = userService.create(userCreateDTO);
 
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
@@ -51,6 +56,8 @@ public class UserController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UserResponseDTO>> getAll() {
+
+        log.info("USER API: request for get all users");
 
         List<UserResponseDTO> users = userService.findAll();
 
@@ -62,6 +69,8 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
 
+        log.info("USER API: request for get user with ID={}", id);
+
         UserResponseDTO userResponseDTO = userService.findById(id);
 
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
@@ -72,6 +81,8 @@ public class UserController {
     @PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO  userUpdateDTO) {
 
+        log.info("USER API: update user with ID={} request by user {}", id, userUpdateDTO.getUsername());
+
         UserResponseDTO userResponseDTO = userService.update(id, userUpdateDTO);
 
         return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
@@ -81,6 +92,8 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+        log.info("USER API: delete user with ID={}", id);
 
         userService.delete(id);
 

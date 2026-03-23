@@ -2,6 +2,8 @@ package com.sharko.yura.taskflow.config;
 
 import com.sharko.yura.taskflow.entity.User;
 import com.sharko.yura.taskflow.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +25,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    private final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
+
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -30,16 +34,28 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
 
+        log.info("SECURITY: attempt load user with username {}", username);
+
+        log.debug("SECURITY: searching user in database by username {}", username);
         User user = userRepository.findByUsername(username);
+
         if (user == null) {
+
+            log.warn("SECURITY: user with {} not found", username);
             throw new UsernameNotFoundException(username);
+
         }
 
-        return org.springframework.security.core.userdetails.User
+        log.debug("SECURITY: user {} found with role {}", username, user.getRole());
+
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .roles(user.getRole().name())
                 .build();
+
+        log.info("SECURITY: user details successfully loaded for {}", username);
+        return userDetails;
     }
 }
